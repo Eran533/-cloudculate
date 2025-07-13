@@ -58,7 +58,6 @@ class MongoDBClient:
             cursor = cursor.limit(limit)
         return list(cursor)
 
-# Singleton Mongo client instance
 mongo_client = MongoDBClient(MONGO_URI, DB_NAME, COLLECTION_NAME)
 
 def save_architectures_upsert(parsed_list: List[dict]) -> Optional[BulkWriteResult]:

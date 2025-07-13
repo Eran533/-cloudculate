@@ -7,5 +7,5 @@ class Architecture(BaseModel):
     description: str
     summary: str
     category: Optional[str] = None
-    services: List[str] = []  # ✅ Added this line
+    services: List[str] = []
     timestamp: datetime = Field(default_factory=datetime.utcnow)

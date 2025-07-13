@@ -61,7 +61,6 @@ async def scrape_and_parse() -> List[Architecture]:
 
         print(f"Validated {len(validated)} architectures ready to save")
 
-        # Use upsert bulk to avoid duplicates based on 'name'
         result = save_architectures_upsert(validated)
         print(f"Upserted to MongoDB: {result.bulk_api_result if result else 'No operations performed'}")
 
