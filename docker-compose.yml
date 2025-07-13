@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  backend:
+    build: backend
+    volumes:
+      - ./backend:/app
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb+srv://eranblank533:Tomas1a1@cloudculate.u5dbjl7.mongodb.net/?retryWrites=true&w=majority
+      - MONGO_DB_NAME=cloudculate
+      - MONGO_COLLECTION_NAME=architectures
+
+  frontend:
+    build: frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE=http://localhost:8000
