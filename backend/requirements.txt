@@ -5,4 +5,4 @@ requests
 beautifulsoup4
 python-dotenv
 google-generativeai
-selenium
+selenium>=4.10.0

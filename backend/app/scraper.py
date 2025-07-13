@@ -1,24 +1,29 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import os
 import time
 
 def scrape_aws_architectures():
     options = Options()
-    options.add_argument("--headless")  # Run without UI
-    options.add_argument("--disable-gpu")
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
 
-    driver = webdriver.Chrome(options=options)
+    # ✅ Use env variables you set in the Dockerfile
+    options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/google-chrome")
+    service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver"))
+
+    driver = webdriver.Chrome(service=service, options=options)
+
     url = "https://www.netcomlearning.com/blog/aws-service-list"
     driver.get(url)
-
-    time.sleep(5)  # Wait for JS to load content
+    time.sleep(5)
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    # Clean HTML
     for tag in soup(['script', 'style']):
         tag.decompose()
 
@@ -26,17 +31,10 @@ def scrape_aws_architectures():
 
     results = []
 
-    # Find header by text and get next section or container with list
     header = soup.find(lambda tag: tag.name in ['h1', 'h2', 'h3'] and 'List of All AWS Services' in tag.text)
-    if header:
-        container = header.find_next_sibling()
-    else:
-        container = soup  # fallback to whole page
+    container = header.find_next_sibling() if header else soup
 
-    # Find all <p> tags with <strong> inside in container
-    category_headers = container.find_all('p')
-
-    for p in category_headers:
+    for p in container.find_all('p'):
         strong_tag = p.find('strong')
         if strong_tag:
             category_name = strong_tag.get_text(strip=True)
