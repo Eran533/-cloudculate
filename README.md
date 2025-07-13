@@ -6,12 +6,12 @@ CloudCulate is a full-stack application that scrapes AWS service descriptions, e
 
 ## 📦 Features
 
-- ✅ Scrape and parse AWS architecture data using Selenium
-- 🤖 AI-powered enrichment using Google Gemini (extract services & summaries)
-- 🧠 FastAPI backend with validation, logging, and CORS support
-- 🌐 React + Vite frontend to view parsed architectures
-- 🐳 Fully containerized with Docker Compose
-- 💾 MongoDB (Cloud) for persistent storage
+- ✅ Scrape and parse AWS architecture data using Selenium  
+- 🤖 AI-powered enrichment using Google Gemini (extract services & summaries)  
+- 🧠 FastAPI backend with validation, logging, and CORS support  
+- 🌐 React + Vite frontend to view parsed architectures  
+- 🐳 Fully containerized with Docker Compose  
+- 💾 MongoDB (Cloud) for persistent storage  
 
 ---
 
@@ -28,59 +28,66 @@ CloudCulate is a full-stack application that scrapes AWS service descriptions, e
              └─────┬───────┘
                    │
         ┌──────────▼──────────┐
-        │  AI Enrichment (Gemini) │
+        │  AI Enrichment      │  (Gemini)
         └──────────┬──────────┘
                    │
              ┌─────▼─────┐
              │ MongoDB   │  (Cloud)
              └───────────┘
+```
 
-🚀 Getting Started (Local Setup)
-These instructions will help you set up and run CloudCulate locally using Docker Compose.
+---
 
-Prerequisites
-Docker installed on your machine
+## 🚀 Getting Started (Local Setup)
 
-Docker Compose installed (usually comes with Docker Desktop)
+These instructions assume you have Docker and Docker Compose installed.
 
-Step 1: Clone the repository
-bash
-Copy
-Edit
+### 1. 🧾 Clone the Repository
+
+```bash
 git clone https://github.com/yourusername/cloudculate.git
 cd cloudculate
-Step 2: Configure environment variables
-If your project requires any environment variables (e.g., for AI API keys or MongoDB connection), create a .env file in the root directory or update the docker-compose.yml accordingly.
+```
 
-Example .env file:
+### 2. ⚙️ Configure Environment Variables
 
-env
-Copy
-Edit
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# MongoDB Configuration
 MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/cloudculate?retryWrites=true&w=majority
+
+# AI Configuration
 GEMINI_API_KEY=your_google_gemini_api_key
-Step 3: Start all services with Docker Compose
-bash
-Copy
-Edit
+
+# Optional: Application Configuration
+BACKEND_PORT=8000
+FRONTEND_PORT=3000
+```
+
+### 3. 🐳 Start the Application (Docker Compose)
+
+```bash
 docker-compose up --build
+```
+
 This will:
+- Build and start the FastAPI backend service
+- Build and start the React frontend service
+- Connect to your cloud MongoDB instance
 
-Build and start the FastAPI backend service
+### 4. 🌐 Access the Application
 
-Build and start the React frontend service
+- **Frontend**: Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
+- **Backend API**: The FastAPI backend will be available at [http://localhost:8000](http://localhost:8000)
 
-Start a MongoDB container if configured locally or connect to your cloud MongoDB
+### 5. 🛑 Stop the Services
 
-Step 4: Access the application
-Open your browser and navigate to: http://localhost:3000 for the React frontend
+To stop all running containers:
 
-The FastAPI backend will be available at: http://localhost:8000
+1. Press `CTRL+C` in the terminal where Docker Compose is running
+2. Run the following command to remove containers:
 
-Step 5: Stop the services
-To stop all running containers, press CTRL+C in the terminal where Docker Compose is running, then run:
-
-bash
-Copy
-Edit
+```bash
 docker-compose down
+```
