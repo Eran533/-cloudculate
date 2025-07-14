@@ -1,8 +1,8 @@
-FROM python:3.9-slim
+FROM --platform=$TARGETPLATFORM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies and Chrome dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget curl unzip gnupg2 fonts-liberation libappindicator3-1 libasound2 \
     libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 libgdk-pixbuf2.0-0 \
@@ -11,29 +11,42 @@ RUN apt-get update && apt-get install -y \
     libssl-dev gcc && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chrome
-RUN wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/138.0.7204.100/linux64/chrome-linux64.zip && \
-    unzip chrome-linux64.zip && \
-    mv chrome-linux64 /opt/chrome && \
-    ln -s /opt/chrome/chrome /usr/bin/google-chrome && \
-    rm chrome-linux64.zip
+# Set env vars for Chrome version
+ENV CHROME_VERSION=138.0.7204.100
 
-# Install ChromeDriver
-RUN wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/138.0.7204.94/linux64/chromedriver-linux64.zip && \
-    unzip chromedriver-linux64.zip && \
-    mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
+# Download Chrome & ChromeDriver based on architecture
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        CHROME_ARCH="linux64"; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        CHROME_ARCH="linux-arm64"; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    echo "Downloading Chrome for $CHROME_ARCH..." && \
+    wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/${CHROME_ARCH}/chrome-${CHROME_ARCH}.zip && \
+    unzip chrome-${CHROME_ARCH}.zip && \
+    mv chrome-${CHROME_ARCH} /opt/chrome && \
+    ln -s /opt/chrome/chrome /usr/bin/google-chrome && \
+    rm chrome-${CHROME_ARCH}.zip && \
+    \
+    echo "Downloading ChromeDriver for $CHROME_ARCH..." && \
+    wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/${CHROME_ARCH}/chromedriver-${CHROME_ARCH}.zip && \
+    unzip chromedriver-${CHROME_ARCH}.zip && \
+    mv chromedriver-${CHROME_ARCH}/chromedriver /usr/local/bin/chromedriver && \
     chmod +x /usr/local/bin/chromedriver && \
-    rm -rf chromedriver-linux64 chromedriver-linux64.zip
+    rm -rf chromedriver-${CHROME_ARCH} chromedriver-${CHROME_ARCH}.zip
 
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy app code
 COPY app ./app
 
-# Set environment variables to make sure Chrome works in headless mode
+# Set env vars for Selenium
 ENV CHROME_BIN=/usr/bin/google-chrome \
     CHROMEDRIVER_PATH=/usr/local/bin/chromedriver
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run app
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]  

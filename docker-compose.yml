@@ -1,7 +1,10 @@
-version: '3.8'
+version: '3.9'
+
 services:
   backend:
-    build: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     volumes:
       - ./backend:/app
     container_name: backend
@@ -13,7 +16,9 @@ services:
       - MONGO_COLLECTION_NAME=architectures
 
   frontend:
-    build: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: frontend
     ports:
       - "3000:3000"

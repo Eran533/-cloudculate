@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-pymongo>=4.3.3
+pymongo[srv]>=4.3.3
 requests
 beautifulsoup4
 python-dotenv
