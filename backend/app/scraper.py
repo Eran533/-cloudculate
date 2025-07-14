@@ -28,7 +28,7 @@ def scrape_aws_architectures():
             print("✅ Chromedriver found")
 
         options = Options()
-        options.add_argument("--headless=new")  # or comment out for GUI mode
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-dev-shm-usage")
